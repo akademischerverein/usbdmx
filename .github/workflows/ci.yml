@@ -16,6 +16,7 @@ jobs:
               lib: libusbdmx.so
             - os: windows-latest
               lib: usbdmx64.dll
+              make_extra_args: "-f Makefile-mingw64"
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
@@ -27,7 +28,7 @@ jobs:
       run: sudo apt-get update && sudo apt-get install libudev-dev -y
       if: ${{ matrix.os == 'ubuntu-latest' }}
     - name: Build
-      run: make ${{ matrix.lib }}
+      run: make ${{ matrix.make_extra_args }} ${{ matrix.lib }}
     - name: Upload Artifacts
       uses: actions/upload-artifact@v6
       with:
