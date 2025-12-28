@@ -54,3 +54,7 @@ jobs:
       run: make ${{ matrix.make_extra_args }} ${{ matrix.lib }}
     - name: Test version
       run: echo "${{ needs.prepare.outputs.version }}"
+    - name: Move lib to right name
+      run: mv ${{ matrix.lib }} ${{ matrix.lib }}.${{ runner.arch }}
+    - name: Upload library
+      run: gh release upload ${{ needs.prepare.outputs.version }} ${{ matrix.lib }}.${{ runner.arch }}
