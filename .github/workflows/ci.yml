@@ -25,6 +25,7 @@ jobs:
         fetch-depth: 0
     - name: Install missing packages
       run: sudo apt-get update && sudo apt-get install libudev-dev -y
+      if: ${{ matrix.os == 'ubuntu-latest' }}
     - name: Build
       run: make ${{ matrix.lib }}
     - name: Upload Artifacts
