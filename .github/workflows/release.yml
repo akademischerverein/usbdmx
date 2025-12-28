@@ -65,9 +65,9 @@ jobs:
     - name: Test version
       run: echo "${{ needs.prepare.outputs.version }}"
     - name: Move lib to right name
-      run: mv ${{ matrix.lib }} ${{ matrix.lib }}.${{ runner.arch }}
+      run: mv ${{ matrix.lib }} ${{ matrix.lib }}.${{ runner.os }}_${{ runner.arch }}
     - name: Upload library
-      run: gh release upload ${{ needs.prepare.outputs.version }} ${{ matrix.lib }}.${{ runner.arch }}
+      run: gh release upload ${{ needs.prepare.outputs.version }} ${{ matrix.lib }}.${{ runner.os }}_${{ runner.arch }}
   publish:
     name: Publish release
     if: github.event.inputs.publish != 'draft'
