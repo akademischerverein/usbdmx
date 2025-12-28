@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  workflow_dispatch:
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+        version: ${{ steps.version.outputs.VERSION_ID }}
+    steps:
+        - name: Determine version
+          id: version
+          run: echo "VERSION_ID=$(date +%s)" >> "$GITHUB_OUTPUT"
+        - name: Create release
+          run: gh release create --draft --generate-notes ${{ steps.version.outputs.VERSION_ID }}
+  build:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-15-intel, macos-latest]
+        include:
+            - os: ubuntu-latest
+              lib: libusbdmx.so
+            - os: ubuntu-24.04-arm
+              lib: libusbdmx.so
+            - os: windows-latest
+              lib: usbdmx64.dll
+              make_extra_args: "-f Makefile-mingw64"
+            - os: macos-15-intel
+              lib: libusbdmx.dylib
+            - os: macos-latest
+              lib: libusbdmx.dylib
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    defaults:
+        run:
+            shell: bash
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+    - name: Install missing packages
+      run: sudo apt-get update && sudo apt-get install libudev-dev -y
+      if: ${{ runner.os == 'Linux' }}
+    - name: Build
+      run: make ${{ matrix.make_extra_args }} ${{ matrix.lib }}
+    - name: Test version
+      run: echo "${{ needs.prepare.outputs.version }}"
