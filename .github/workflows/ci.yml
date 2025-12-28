@@ -19,7 +19,7 @@ jobs:
       with:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
     - name: Install missing packages
-      run: apt install libudev-dev -y
+      run: sudo apt-get install libudev-dev -y
     - name: Build
       run: make libusbdmx.so
     - name: Upload Artifacts
