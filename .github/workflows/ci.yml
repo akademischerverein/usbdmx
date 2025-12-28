@@ -10,24 +10,31 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
+        include:
+            - os: ubuntu-latest
+              lib: libusbdmx.so
+            - os: windows-latest
+              lib: usbdmx64.dll
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
     - name: Checkout
       uses: actions/checkout@v6
       with:
-        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+        fetch-depth: 0
     - name: Install missing packages
       run: sudo apt-get update && sudo apt-get install libudev-dev -y
     - name: Build
-      run: make libusbdmx.so
+      run: make ${{ matrix.lib }}
     - name: Upload Artifacts
       uses: actions/upload-artifact@v6
       with:
         name: DMXforDummies-${{ runner.os }}-${{ github.job }}
         path: |
           libusbdmx.so
+          libusbdmx.dylib
+          usbdmx64.dll
           *.o
           **/*.o
           50-usbdmx.rules
