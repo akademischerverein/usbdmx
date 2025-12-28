@@ -19,11 +19,16 @@ jobs:
               make_extra_args: "-f Makefile-mingw64"
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
+    defaults:
+        run:
+            shell: bash
     steps:
     - name: Checkout
       uses: actions/checkout@v6
       with:
         fetch-depth: 0
+    - name: Test
+      run: gcc --version
     - name: Install missing packages
       run: sudo apt-get update && sudo apt-get install libudev-dev -y
       if: ${{ matrix.os == 'ubuntu-latest' }}
